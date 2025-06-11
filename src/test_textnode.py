@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType, text_node_to_html_node
+from helpers import type_to_delim, split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -53,7 +54,36 @@ class TestTextNode(unittest.TestCase):
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.to_html(), "<img src=\"www.google.com\" alt=\"This is a text node\"></img>")
+    
+    def test_one_delim_middle(self):
+        node = TextNode("We are testing **markdown** today", TextType.TEXT)
+        new_node = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(new_node[0].text, "We are testing ")
+        self.assertEqual(new_node[0].text_type, TextType.TEXT)
+        self.assertEqual(new_node[1].text, "markdown")
+        self.assertEqual(new_node[1].text_type, TextType.BOLD)
+        self.assertEqual(new_node[2].text, " today")
+        self.assertEqual(new_node[2].text_type, TextType.TEXT)
+   
+    def test_one_delim_start(self):
+        node2 = TextNode("**We** are testing markdown today", TextType.TEXT)
+        new_node = split_nodes_delimiter([node2], "**", TextType.BOLD)
+        self.assertEqual(new_node[0].text, "")
+        self.assertEqual(new_node[0].text_type, TextType.TEXT)
+        self.assertEqual(new_node[1].text, "We")
+        self.assertEqual(new_node[1].text_type, TextType.BOLD)
+        self.assertEqual(new_node[2].text, " are testing markdown today")
+        self.assertEqual(new_node[2].text_type, TextType.TEXT)
 
+    def test_one_delim_end(self):
+        node3 = TextNode("We are testing markdown **today**", TextType.TEXT)
+        new_node = split_nodes_delimiter([node3], "**", TextType.BOLD)
+        self.assertEqual(new_node[0].text, "We are testing markdown ")
+        self.assertEqual(new_node[0].text_type, TextType.TEXT)
+        self.assertEqual(new_node[1].text, "today")
+        self.assertEqual(new_node[1].text_type, TextType.BOLD)
+        self.assertEqual(new_node[2].text, "")
+        self.assertEqual(new_node[2].text_type, TextType.TEXT)
 
 if __name__ == "__main__":
     unittest.main()

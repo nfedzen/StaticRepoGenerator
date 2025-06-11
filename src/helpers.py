@@ -18,7 +18,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             new_nodes.append(node) 
             continue
         if node.text.count(delimiter) % 2 == 1:
-            raise Exception(f"Invalid MarkdownL missing closing {delimiter}")
+            raise Exception(f"Invalid Markdown missing closing {delimiter}")
         list_of_strings = node.text.split(delimiter)
         for string in list_of_strings:
             if list_of_strings.index(string) % 2 == 0:
@@ -27,5 +27,4 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             else:
                 new_node = TextNode(string, type_to_delim(delimiter))
                 new_nodes.append(new_node)
-    print(new_nodes)
     return new_nodes

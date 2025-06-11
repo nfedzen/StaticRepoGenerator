@@ -84,6 +84,27 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(new_node[1].text_type, TextType.BOLD)
         self.assertEqual(new_node[2].text, "")
         self.assertEqual(new_node[2].text_type, TextType.TEXT)
+    
+    def test_two_delim_middle(self):
+        node3 = TextNode("We are _testing_ _markdown_ today", TextType.TEXT)
+        new_node = split_nodes_delimiter([node3], "_", TextType.BOLD)
+        self.assertEqual(new_node[0].text, "We are ")
+        self.assertEqual(new_node[0].text_type, TextType.TEXT)
+        self.assertEqual(new_node[1].text, "testing")
+        self.assertEqual(new_node[1].text_type, TextType.ITALIC)
+        self.assertEqual(new_node[2].text, " ")
+        self.assertEqual(new_node[2].text_type, TextType.TEXT)
+        self.assertEqual(new_node[3].text, "markdown")
+        self.assertEqual(new_node[3].text_type, TextType.ITALIC)
+        self.assertEqual(new_node[4].text, " today")
+        self.assertEqual(new_node[4].text_type, TextType.TEXT)
+
+    def test_not_wrapped_delim(self):
+        node3 = TextNode("We are _testing markdown today", TextType.TEXT)
+        with self.assertRaises(Exception) as context:
+            new_node = split_nodes_delimiter([node3], "_", TextType.BOLD)
+
+        
 
 if __name__ == "__main__":
     unittest.main()

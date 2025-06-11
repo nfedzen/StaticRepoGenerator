@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType, text_node_to_html_node
-from helpers import type_to_delim, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes
+from helpers import type_to_delim, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_link, split_nodes_image, text_to_textnodes, markdown_to_blocks
 
 
 class TestTextNode(unittest.TestCase):
@@ -291,6 +291,48 @@ class TestTextNode(unittest.TestCase):
         with self.assertRaises(Exception):
             text_to_textnodes(text)
 
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+        
+    def test_markdown_to_blocks_empty(self):
+        md = ""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_markdown_to_blocks_only_whitespace(self):
+        md = "\n   \n\n"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_markdown_to_blocks_single_block(self):
+        md = "Just a single block with no blank lines."
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, ["Just a single block with no blank lines."])
+
+    def test_markdown_to_blocks_multiple_blank_lines(self):
+        md = "Block one\n\n\n\nBlock two\n\nBlock three"
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            ["Block one", "Block two", "Block three"]
+        )
 
 if __name__ == "__main__":
     unittest.main()

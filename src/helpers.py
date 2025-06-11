@@ -121,3 +121,18 @@ def text_to_textnodes(text):
     node_list = split_nodes_delimiter(node_list, "_", TextType.ITALIC)
     node_list = split_nodes_delimiter(node_list, "**", TextType.BOLD)
     return node_list
+
+def markdown_to_blocks(markdown):
+    blocks = []
+    current_block = []
+    lines = markdown.split('\n')
+    for line in lines:
+        if not line.strip():
+            if current_block:
+                blocks.append('\n'.join(current_block).strip())
+                current_block = []
+        else:
+            current_block.append(line)
+    if current_block:
+        blocks.append('\n'.join(current_block).strip())
+    return blocks
